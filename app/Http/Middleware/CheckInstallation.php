@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Http\Controllers\SetupController;
+
+class CheckInstallation
+{
+    public function handle($request, \Closure $next)
+    {
+        if (config('database.default') == 'dummy') {
+            return $next($request); // @codeCoverageIgnore
+        }
+
+        if (SetupController::checkTablesExist()) {
+            return response()->view('setup.locked');
+        }
+
+        return $next($request);
+    }
+}
